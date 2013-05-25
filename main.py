@@ -10,7 +10,7 @@ from common import *
 import input
 import ui
 import sim
-import actions
+import player_actions as pa
 
 from map import Map
 from entity import Entity
@@ -66,16 +66,17 @@ def main(argv = None):
     libtcod.console_set_custom_font('arial12x12.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_TCOD)
     libtcod.console_init_root(SCREEN_WIDTH, SCREEN_HEIGHT, PROGRAM_NAME, False)
     libtcod.sys_set_fps(10)
+    libtcod.console_set_background_flag(0, libtcod.BKGND_SET)
 
     # Create a map and add starting entities.
     map = Map(maps.ground_control.level_1_raw)
 
-    player = Human("Bob Smith", "male", map.entry_point[0], map.entry_point[1], 15, 30)
+    player = Human("Bob Smith", "male", 15, 30)
     player.report = ReportType.PLAYER
-    map.add_entity(player)
+    map.add_entity(map.entry_point[0], map.entry_point[1], player)
 
     # Ghost is used to move around map for viewing
-    ghost = Human("Ghost", "male", map.entry_point[0], map.entry_point[1], 15, 0)
+    ghost = Human("Ghost", "male", 15, 0)
 
     # Set up UI
     ui.Screens.map = ui.MapScreen(MAP_WINDOW[0], MAP_WINDOW[1], MAP_WINDOW[2], MAP_WINDOW[3])

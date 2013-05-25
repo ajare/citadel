@@ -16,15 +16,9 @@ class Window(Entity):
     #
     # __init__()
     #
-    def __init__(self, x, y):
-        """Create window.
-        
-        Arguments:
-        x - x-position in world
-        y - y-position in world
-
-        """
-        super(Window, self).__init__("Window", EntityType.OTHER, x, y, libtcod.CHAR_CHECKBOX_UNSET, libtcod.white)
+    def __init__(self):
+        """Create window."""
+        super(Window, self).__init__("Window", EntityType.OTHER, libtcod.CHAR_CHECKBOX_UNSET, libtcod.white)
 
         # Start off closed.
         self.closed = True

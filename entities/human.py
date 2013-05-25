@@ -4,9 +4,10 @@
 # Imports
 #
 import libtcodpy as libtcod
-from entity import Entity
+from entity import Entity, ReportType
 from inventory import Inventory
-
+import entity_actions as ea
+        
 #
 # Human
 #
@@ -16,23 +17,28 @@ class Human(Entity):
     #
     # __init__()
     #
-    def __init__(self, name, gender, x, y, view_radius, inventory_size):
+    def __init__(self, name, gender, view_radius, inventory_size):
         """Create new human entity instance.
         
         Arguments:
         name - name of entity
         gender - either "Male" or "Female"
-        x - x-position in world
-        y - y-position in world
         view_radius - number of tiles they can see into the distance
         inventory_size - size of their inventory, in game weight units
         
         """
-        super(Human, self).__init__(name, "Human", x, y, '@', libtcod.white)
+        super(Human, self).__init__(name, "Human", '@', libtcod.white)
 
         self.gender = gender
         self.view_radius = view_radius
         self.inventory = Inventory(inventory_size)
+        
+        self.report = ReportType.VISIBLE_NPC
+        
+        # Add actions
+        self.action_drop = ea.action_drop
+        self.action_get = ea.action_get
+        self.action_consume = ea.action_consume
 
     #
     # __str__()
@@ -42,40 +48,27 @@ class Human(Entity):
         return "{0} human named {1}".format(self.gender.lower(), self.name)
         
     #
-    # action_get()
+    # add_entity_to_inventory()
     #
-    def action_get(self, map, x, y):
-        """Pick pick an entity up.
+    def add_entity_to_inventory(self, entity):
+        """Helper method to add an entity to inventory.
         
         Arguments:
-        map - map the action is being performed on.
-        x - x-position in world to pick up from
-        y - y-position in world to pick up from
-
-        TODO: check inventory space
+        entity - entity to add.
         """
-        tile = map.tiles[x][y]
-        item = tile.inventory
-        item.x = -1
-        item.y = -1
-        self.inventory.add_item(item)
-        tile.inventory = None
+        entity.x = -1
+        entity.y = -1
+        entity.owner = self
+        self.inventory.add_item(entity)
+
+    #
+    # remove_entity_from_inventory()
+    #
+    def remove_entity_from_inventory(self, entity):
+        """Helper method to remove an entity from inventory.
         
-        self.add_message("You pick up %s." % item.def_name,
-                         "%s picks up %s." % (self.def_name, item.def_name))
-
-        return True
-
-    #
-    # action_drop()
-    #
-    def action_drop(self, entity, map):
-        """Drop an entity."""
-        return entity.drop_me(self, map)
-    
-    #
-    # action_consume()
-    #
-    def action_consume(self, entity, map):
-        """Consume an entity."""
-        return entity.consume_me(self)
+        Arguments:
+        entity - entity to remove.
+        """
+        entity.owner = None
+        self.inventory.remove_item(entity)

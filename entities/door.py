@@ -16,15 +16,9 @@ class Door(Entity):
     #
     # __init__()
     #
-    def __init__(self, x, y):
-        """Create door.
-        
-        Arguments:
-        x - x-position in world
-        y - y-position in world
-
-        """
-        super(Door, self).__init__("Door", EntityType.OTHER, x, y, '+', libtcod.white)
+    def __init__(self):
+        """Create door."""
+        super(Door, self).__init__("Door", EntityType.OTHER, '+', libtcod.white)
 
         # Start off closed and unlocked.
         self.closed = True

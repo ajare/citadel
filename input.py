@@ -5,7 +5,7 @@
 #
 import libtcodpy as libtcod
 from common import *
-import actions
+import player_actions as pa
 import ui
 
 #
@@ -23,7 +23,7 @@ def handle_inventory_input(entity, key):
     
     if key.vk == libtcod.KEY_ESCAPE:
         if inv_filter is None:
-            return [actions.action_hide_inventory]
+            return [pa.action_hide_inventory]
         else:
             ui.Screens.inv.action_filter = None
     elif inv_filter is None:
@@ -48,7 +48,7 @@ def handle_inventory_input(entity, key):
         elif key.c == ord('w'):
             return [make_filter_inventory("wear")]
         else:
-            return [actions.action_none, InputType.INVENTORY_SCREEN, None]
+            return [pa.action_none, InputType.INVENTORY_SCREEN, None]
     else:
         ch = ord(chr(key.c).upper()) if key.shift else key.c
         if ch in ui.Screens.inv.char_entity_map:
@@ -63,12 +63,12 @@ def handle_inventory_input(entity, key):
                     ui.Screens.inv.hide_and_deactivate()
                     
                     # Now run the class method
-                    turn_taken = getattr(entity, source_func)(target_entity, map)
+                    turn_taken = getattr(entity, source_func)(entity, target_entity, map)
                     return turn_taken, InputType.IMMEDIATE, None
                 return [perform_action]
     
     # Default return code if no action is caught
-    return [actions.action_none, InputType.INVENTORY_SCREEN, None]
+    return [pa.action_none, InputType.INVENTORY_SCREEN, None]
 
 #
 # handle_input()
@@ -94,59 +94,59 @@ def handle_input(entity, input_type, delayed_action):
     # Do we want to toggle fullscreen?
     if key.vk == libtcod.KEY_ENTER and key.lalt:
         libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
-        return [actions.action_none, input_type, delayed_action]
+        return [pa.action_none, input_type, delayed_action]
     
     if input_type == InputType.IMMEDIATE:
         if key.vk == libtcod.KEY_ESCAPE:
-            return [actions.action_exit] # exit program
+            return [pa.action_exit] # exit program
         #
         # Movement actions
         #
         elif key.vk in (libtcod.KEY_UP, libtcod.KEY_KP8):
-            return [actions.action_move, 0, -1]
+            return [pa.action_move, 0, -1]
         elif key.vk in (libtcod.KEY_DOWN, libtcod.KEY_KP2):
-            return [actions.action_move, 0, 1]
+            return [pa.action_move, 0, 1]
         elif key.vk  in (libtcod.KEY_LEFT, libtcod.KEY_KP4):
-            return [actions.action_move, -1, 0]
+            return [pa.action_move, -1, 0]
         elif key.vk  in (libtcod.KEY_RIGHT, libtcod.KEY_KP6):
-            return [actions.action_move, 1, 0]
+            return [pa.action_move, 1, 0]
         elif key.vk == libtcod.KEY_KP7:
-            return [actions.action_move, -1, -1]
+            return [pa.action_move, -1, -1]
         elif key.vk == libtcod.KEY_KP9:
-            return [actions.action_move, 1, -1]
+            return [pa.action_move, 1, -1]
         elif key.vk == libtcod.KEY_KP3:
-            return [actions.action_move, 1, 1]
+            return [pa.action_move, 1, 1]
         elif key.vk == libtcod.KEY_KP1:
-            return [actions.action_move, -1, 1]
+            return [pa.action_move, -1, 1]
         #
         # World interaction actions
         #
         elif key.c == ord('c') and key.lctrl:
-                return [actions.action_close]
+                return [pa.action_close]
         elif key.c == ord('o') and key.lctrl:
-                return [actions.action_open]
+                return [pa.action_open]
         elif key.c == ord('g'):
-                return [actions.action_get]
+                return [pa.action_get]
         #
         # Inventory actions
         #
         elif key.c == ord('i'):
-                return [actions.action_show_inventory, None]
+                return [pa.action_show_inventory, None]
         elif key.c == ord('d'):
-                return [actions.action_show_inventory, "drop"]
+                return [pa.action_show_inventory, "drop"]
         elif key.c == ord('t'):
-                return [actions.action_show_inventory, "throw"]
+                return [pa.action_show_inventory, "throw"]
         elif key.c == ord('u'):
-                return [actions.action_show_inventory, "use"]
+                return [pa.action_show_inventory, "use"]
         elif key.c == ord('c'):
-                return [actions.action_show_inventory, "consume"]
+                return [pa.action_show_inventory, "consume"]
         elif key.c == ord('w'):
-                return [actions.action_show_inventory, "wear"]
+                return [pa.action_show_inventory, "wear"]
         elif key.c == ord('e'):
-                return [actions.action_show_inventory, "equip"]
+                return [pa.action_show_inventory, "equip"]
     elif input_type == InputType.DIRECTIONAL:
         if key.vk == libtcod.KEY_ESCAPE:
-            return [actions.action_cancel] # cancel a multi-stage action we are in the processing of performing
+            return [pa.action_cancel] # cancel a multi-stage action we are in the processing of performing
         elif key.vk in (libtcod.KEY_UP, libtcod.KEY_KP8):
             return [delayed_action, 0, -1]
         elif key.vk in (libtcod.KEY_DOWN, libtcod.KEY_KP2):
@@ -164,9 +164,9 @@ def handle_input(entity, input_type, delayed_action):
         elif key.vk == libtcod.KEY_KP1:
             return [delayed_action, -1, 1]
         else:
-            return [actions.action_none, input_type, delayed_action]
+            return [pa.action_none, input_type, delayed_action]
     elif input_type == InputType.INVENTORY_SCREEN:
         return handle_inventory_input(entity, key)
     
     # If we get here somehow, return the 'null' action.
-    return [actions.action_none, input_type, None]
+    return [pa.action_none, input_type, None]

@@ -270,13 +270,15 @@ class InventoryScreen(Screen):
             
             # Draw actions text - highlight the selected one
             libtcod.console_set_color_control(libtcod.COLCTRL_1, libtcod.blue, libtcod.black)
-            libtcod.console_set_color_control(libtcod.COLCTRL_2, libtcod.light_blue, libtcod.black)
+            libtcod.console_set_color_control(libtcod.COLCTRL_2, libtcod.blue, libtcod.white)
+            libtcod.console_set_color_control(libtcod.COLCTRL_3, libtcod.black, libtcod.white)
 
-            action_text = "%cU%cse   %cD%crop   %cT%chrow   %cC%consume   %cE%cquip   %cW%cear"
-            action_text_format = [libtcod.COLCTRL_1, libtcod.COLCTRL_STOP] * 6
+            action_text = "%cU%cse%c   %cD%crop%c   %cT%chrow%c   %cC%consume%c   %cE%cquip%c   %cW%cear%c"
+            action_text_format = [libtcod.COLCTRL_1, libtcod.COLCTRL_STOP, libtcod.COLCTRL_STOP] * 6
             if self.action_filter is not None:
                 index = ["use", "drop", "throw", "consume", "equip", "wear"].index(self.action_filter)
-                action_text_format[index * 2 + 1] = libtcod.COLCTRL_2
+                action_text_format[index * 3 + 0] = libtcod.COLCTRL_2
+                action_text_format[index * 3 + 1] = libtcod.COLCTRL_3
                           
             action_text = action_text % tuple(action_text_format)
             libtcod.console_print(0, self.x_offset + 1, self.y_offset + 3, action_text)

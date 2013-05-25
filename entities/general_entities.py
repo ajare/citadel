@@ -20,9 +20,9 @@ class MedKit(Entity):
     #
     # __init__()
     #
-    def __init__(self, x, y):
+    def __init__(self):
         """Create MedKit."""
-        super(MedKit, self).__init__("medkit", EntityType.MEDECINE, x, y, '=', libtcod.white)
+        super(MedKit, self).__init__("medkit", EntityType.MEDECINE, '=', libtcod.white)
         self.blocks_move = False
         self.blocks_sight = False
 
@@ -35,9 +35,9 @@ class Pistol(Entity):
     #
     # __init__()
     #
-    def __init__(self, x, y):
+    def __init__(self):
         """Create pistol."""
-        super(Pistol, self).__init__("pistol", EntityType.WEAPON, x, y, '/', libtcod.white)
+        super(Pistol, self).__init__("pistol", EntityType.WEAPON, '/', libtcod.white)
         self.blocks_move = False
         self.blocks_sight = False
 
@@ -50,9 +50,9 @@ class PowerArmour(Entity):
     #
     # __init__()
     #
-    def __init__(self, x, y):
+    def __init__(self):
         """Create power armour."""
-        super(PowerArmour, self).__init__("power armour", EntityType.CLOTHING, x, y, '#', libtcod.white)
+        super(PowerArmour, self).__init__("power armour", EntityType.CLOTHING, '#', libtcod.white)
         self.blocks_move = False
         self.blocks_sight = False
 
@@ -73,9 +73,9 @@ class SodaCan(Entity):
     #
     # __init__()
     #
-    def __init__(self, x, y):
+    def __init__(self):
         """Create soda can."""
-        super(SodaCan, self).__init__("soda can", EntityType.COMESTIBLE, x, y, '^', libtcod.white)
+        super(SodaCan, self).__init__("soda can", EntityType.COMESTIBLE, '^', libtcod.white)
         self.blocks_move = False
         self.blocks_sight = False
         self.liquid = LiquidType.SODA
@@ -128,8 +128,8 @@ class QuantumAnalyser(Entity):
     #
     # __init__()
     #
-    def __init__(self, x, y):
+    def __init__(self):
         """Create quantum analyser."""
-        super(QuantumAnalyser, self).__init__("quantum analyser", EntityType.OTHER, x, y, '?', libtcod.white)
+        super(QuantumAnalyser, self).__init__("quantum analyser", EntityType.OTHER, '?', libtcod.white)
         self.blocks_move = False
         self.blocks_sight = False

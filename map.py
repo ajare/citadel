@@ -29,7 +29,8 @@ class Map:
         self.x_max = 0           # max x-dimension of map
         self.y_max = 0           # max y-dimension of map
         self.tiles = None        # jagged array of tiles
-        self.entry_point = 0, 0  # starting point for this level.
+        self.entry_point = 0, 0  # starting point for this level
+        self.entities = []       # entities in this level, used for updating
 
         if seed is not None:
             random.seed(seed)
@@ -57,34 +58,104 @@ class Map:
     #
     # add_entity()
     #
-    def add_entity(self, entity):
+    def add_entity(self, x, y, entity):
         """Add an entity.  This takes up the 'entity' attribute of a tile.  It is assumed the entity has
         a valid position, and this is used to determine which tile to place it on.  It does not do any bounds checking on map.
         
         Arguments:
+        x - x-position in world to add to
+        y - y-position in world to add to
         entity - the entity to add.
         
         """
-        tile = self.tiles[entity.x][entity.y]
+        tile = self.tiles[x][y]
         if tile.entity is None:
             tile.entity = entity
+            entity.owner = map
+            entity.x = x
+            entity.y = y
+            self.entities.append(entity)
         else:
             raise LogicException("Entity placed on a tile where another entity already resides.")            
 
     #
     # add_entity_as_inventory()
     #
-    def add_entity_as_inventory(self, entity):
+    def add_entity_as_inventory(self, x, y, entity):
         """Add an entity as 'inventory' to a tile.  Inventory entities are those which are small/can be picked up etc.
         This takes up the 'inventory' attribute of a tile.  It is assumed the item has a valid position, and this is
         used to determine which tile to place it on.  It does not do any bounds checking on map.
         
         Arguments:
+        x - x-position in world to add to
+        y - y-position in world to add to
         entity - the entity to add.
         
         TODO: allow multiple entities to be placed as inventory, and put a limit on the amount (ie give the tile and inventory).
         """
-        self.tiles[entity.x][entity.y].inventory = entity
+        tile = self.tiles[x][y]
+        if tile.inventory is None:
+            tile.inventory = entity
+            entity.owner = map
+            entity.x = x
+            entity.y = y
+            self.entities.append(entity)
+        else:
+            raise LogicException("Entity placed as inventory on a tile with full inventory.")            
+        
+    #
+    # remove_entity_from_inventory()
+    #
+    def remove_entity_from_inventory(self, x, y):
+        """Remove an entity as 'inventory' from a tile.
+
+        Arguments:
+        x - x-position in world to remove from.
+        y - y-position in world to remove from.
+        
+        Returns:
+        entity removed
+        """
+        tile = self.tiles[x][y]
+        entity = tile.inventory
+        
+        if entity is None:
+            raise LogicException("Tried to remove inventory from (%d,%d) but there was nothing there." % (x, y))
+
+        entity.x = -1
+        entity.y = -1
+        entity.owner = None
+
+        tile.inventory = None
+        self.entities.remove(entity)
+        return entity
+
+    #
+    # remove_entity_from_inventory()
+    #
+    def remove_entity(self, x, y):
+        """Remove an entity from tile
+
+        Arguments:
+        x - x-position in world to remove from.
+        y - y-position in world to remove from.
+
+        Returns:
+        entity removed
+        """
+        tile = map.tiles[x][y]
+        entity = tile.entity
+        
+        if entity is None:
+            raise LogicException("Tried to remove entity from (%d,%d) but there was nothing there." % (x, y))
+
+        entity.x = -1
+        entity.y = -1
+        entity.owner = None
+
+        tile.entity = None
+        self.entities.remove(entity)
+        return entity
 
     #
     # move_entity()
@@ -99,9 +170,6 @@ class Map:
         y - new y location
         
         """
-        entity.last_x = entity.x
-        entity.last_y = entity.y
-        
         old_tile = self.tiles[entity.x][entity.y]
         new_tile = self.tiles[x][y]
         

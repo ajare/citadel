@@ -1,8 +1,5 @@
 """Base entity definition class."""
 
-# We should make entity action_ behaviours attachable
-# Will want sets of behaviours eg for intelligent NPCs, try mixins.  This way we may be able to remove behaviours as well.
-
 #
 # Imports
 #
@@ -40,28 +37,25 @@ class Entity(object):
     #
     # __init__()
     #
-    def __init__(self, name, type, x, y, char, colour):
+    def __init__(self, name, type, char, colour):
         """Create a new entity.
         
         Arguments:
         name - the friendly name of the entity
         type - the basic type, used for internal categorisation (see EntityType)
-        x - x-position in world
-        y - y-position in world
         char - the printable character to use to render this entity
         colour - the colour to print the character in
         
         """
         self.name = name
         self.type = type
-        self.x = x
-        self.y = y
-        self.last_x = x
-        self.last_y = y
+        self.x = -1
+        self.y = -1
         self.char = char
         self.colour = colour
         self.blocks_move = True
         self.blocks_sight = False
+        self.owner = None
         self.report = ReportType.NONE # don't print messages on actions
 
     #
@@ -112,7 +106,7 @@ class Entity(object):
         strong, they may be able to pick up anything.
         
         Arguments:
-        holder - the entity holding this entity
+        dropper - the entity holding this entity
         map - the map that they're on.
         
         Returns:
@@ -124,9 +118,9 @@ class Entity(object):
             self.add_message("There is not enough space to drop %." + self.def_name)
             return False
         else:
-            dropper.inventory.remove_item(self)
-            tile.inventory = self
-            self.x, self.y = dropper.x, dropper.y
+            dropper.remove_entity_from_inventory(self)
+            map.add_entity_as_inventory(dropper.x, dropper.y, self)
+
             dropper.add_message("You drop %s." % self.def_name, 
                                 "%s drops %s." % (dropper.def_name, self.def_name))
             return True

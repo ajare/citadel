@@ -4,7 +4,8 @@ import random
 import tile
 import mapgen
 
-from entities.general_entities import *
+import entities.general_entities as general_entities
+import entities.grunt as enemies
 
 # Ground Control.    This is the first part of the game.    The outline of the building is hard-coded, and each floor
 # will have certain areas which are always in the same location/configuration, but other offices, rooms and ducts
@@ -48,9 +49,11 @@ def level_1_raw(map):
                 map.tiles[x][y] = mapgen.create_laminate_floor(x, y)
 
     # add entities
-    map.add_entity_as_inventory(MedKit(40, 73))
-    map.add_entity_as_inventory(PowerArmour(43, 72))
-    map.add_entity_as_inventory(Pistol(44, 73))
-    map.add_entity_as_inventory(SodaCan(41, 73))
-    map.add_entity_as_inventory(QuantumAnalyser(42, 73))
-    map.add_entity_as_inventory(QuantumAnalyser(41, 75))
+    map.add_entity_as_inventory(40, 73, general_entities.MedKit())
+    map.add_entity_as_inventory(43, 72, general_entities.PowerArmour())
+    map.add_entity_as_inventory(44, 73, general_entities.Pistol())
+    map.add_entity_as_inventory(43, 70, general_entities.SodaCan())
+    map.add_entity_as_inventory(42, 73, general_entities.QuantumAnalyser())
+    map.add_entity_as_inventory(41, 71, general_entities.QuantumAnalyser())
+    map.add_entity(41, 65, enemies.Grunt())
+    map.add_entity(37, 62, enemies.Grunt())
